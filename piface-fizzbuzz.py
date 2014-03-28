@@ -1,10 +1,10 @@
 #!/bin/env/python
 
+from time import sleep
 import pifacedigitalio
 import random
 
 pfd = pifacedigitalio.PiFaceDigital()
-
 
 # define a function that checks for Fizzbuzz
 def checkFizzbuzz(i):
@@ -25,7 +25,22 @@ def checkFizzbuzz(i):
         #otherwise just return i
         return(str(i))
 
+def victoryLights():
+    i = 0
+    while i<=128:
+        pfd.leds[random.randint(0,7)].toggle()
+        sleep(0.01)
+        i+=1
+
+def lightsOut():
+    # switch out lights
+    for led in range(0,7):
+        pfd.leds[led].turn_off()
+
+# make sure lights are off
+lightsOut()
 # create an array of player names
+cpu_names = ["HAL","WOPR","2501","Jarvis","GERTY"]
 player_names = []
 # get a name for Player 1
 player_names.append(raw_input("Hi, what's your name Player " + str(len(player_names)) + "? "))
@@ -39,21 +54,24 @@ i=1
 for led in range(0,7):
     if led < 5:
         pfd.leds[led].turn_on()
-    else:
-        pfd.leds[led].turn_off()
 lives = 5
 # loop through i 1 to 20
 while lives > 0:
-    while i<=10:
+    current_lives = lives
+    while i<=20:
         # check who's turn it is - 3 players take turns, 2 computer players, computer starts
         if (i % player_turn == 0):
             # it's Player 1's turn so get an answer and check if it is correct
             # we use lower to make sure case matches
             if raw_input(player_names[0] + " play! ").lower() != checkFizzbuzz(i).lower():
                 # if wrong
-                print("Wrong!")
+                # turn off a light
                 pfd.leds[lives-1].turn_off()
+                # decrement lives
                 lives -= 1
+                # print a message
+                print("Wrong! " + str(lives) + "/5 lives remaining")
+                # we break out without incrementing i so we're still on the same question
                 break
             #else:
                 # if correct
@@ -61,9 +79,12 @@ while lives > 0:
         else:   
             print(checkFizzbuzz(i))
         # increment the counter
-        i += 1
-if (player_lost == False):
-    print("You win!")
+        i += 1    
+    if (lives == current_lives):
+        print("You win!")
+        victoryLights()
+        break
+    if lives == 0:
+        print("You lose!")
 # switch out lights
-for led in range(0,7):
-    pfd.leds[led].turn_off()
+lightsOut()
