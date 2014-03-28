@@ -119,10 +119,8 @@ global lives
 lives = 5
 
 # initialise piface lights
-for led in range(0,7):
-    if led < lives:
-        pfd.leds[led].turn_on()
-        
+for led in range(0,4):
+    pfd.leds[led].turn_on() 
 # counter to keep track of answer
 i = 1
 # turn counter
