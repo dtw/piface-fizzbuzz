@@ -89,7 +89,7 @@ def randomiseArray(start_array,no_samples=0):
 lightsOut()
 
 # create a list of cpu names
-file=open("/home/pi/cpu_names.txt",'r')
+file=open("./cpu_names.txt",'r')
 cpu_names=file.read().splitlines()
 #cpu_names=file.readline().split()
 #cpu_names = ["HAL","WOPR","2501","Jarvis","GERTY"]
