@@ -44,9 +44,8 @@ def getPlayerCount():
     count=int(raw_input("How many computer players (between 2 and 4)? "))
     if count >4 or count < 2:
         print("Between 2 and 4!")
-        getPlayerCount()
-    else:
-        return count
+        count=getPlayerCount()
+    return count
 
 def getAnswer():
     global lives
