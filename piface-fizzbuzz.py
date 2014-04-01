@@ -41,7 +41,7 @@ def lightsOut():
 
 
 def getPlayerCount():
-    count=int(raw_input("How many computer players (between 2 and 4)? "))
+    count=int(raw_input("How many computer players (between 2 and 4)? ").strip)
     if count >4 or count < 2:
         print("Between 2 and 4!")
         count=getPlayerCount()
@@ -50,7 +50,7 @@ def getPlayerCount():
 def getAnswer():
     global lives
     # we use lower to make sure case matches
-    if raw_input(player + " play!\t").lower() != checkFizzbuzz(i).lower():
+    if raw_input(player + " play!\t").lower().replace(" ", "") != checkFizzbuzz(i).lower():
         # if wrong
         # turn off a light
         pfd.leds[lives-1].turn_off()
