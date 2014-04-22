@@ -41,7 +41,7 @@ def lightsOut():
 
 
 def getPlayerCount():
-    count=int(raw_input("How many computer players (between 2 and 4)? ").strip)
+    count=int(raw_input("How many computer players (between 2 and 4)? ").strip())
     if count >4 or count < 2:
         print("Between 2 and 4!")
         count=getPlayerCount()
@@ -49,6 +49,7 @@ def getPlayerCount():
 
 def getAnswer():
     global lives
+    global player
     # we use lower to make sure case matches
     if raw_input(player + " play!\t").lower().replace(" ", "") != checkFizzbuzz(i).lower():
         # if wrong
@@ -85,71 +86,76 @@ def randomiseArray(start_array,no_samples=0):
     # return randomised array
     return(return_array)
 
-# make sure piface lights are off
-lightsOut()
+def play():
+    print "Welcome to Fizzbuzz!"
+    while True:
+        # create a list of cpu names
+        file=open("./cpu_names.txt",'r')
+        cpu_names=file.read().splitlines()
+        #cpu_names=file.readline().split()
+        #cpu_names = ["HAL","WOPR","2501","Jarvis","GERTY"]
+        # make sure piface lights are off
+        lightsOut()
+        # initialise a list of players
+        player_names = []
+        # get a name for Player 1
+        player_name=raw_input("Hi, what's your name Player " + str(len(player_names)) + "? ")
+        player_names.append(player_name)
 
-# create a list of cpu names
-file=open("./cpu_names.txt",'r')
-cpu_names=file.read().splitlines()
-#cpu_names=file.readline().split()
-#cpu_names = ["HAL","WOPR","2501","Jarvis","GERTY"]
+        # ask how many CPU players
+        cpu_player_count=getPlayerCount()
 
-# initialise a list of players
-player_names = []
+        # add names to player_names
+        player_names.extend(randomiseArray(cpu_names,cpu_player_count))
 
-# get a name for Player 1
-player_name=raw_input("Hi, what's your name Player " + str(len(player_names)) + "? ")
-player_names.append(player_name)
+        # mix up the players
+        player_names = randomiseArray(player_names)
 
-# ask how many CPU players
-cpu_player_count=getPlayerCount()
+        # how many turns to play? this is 5 times the number of players so everyone has 5 turns
+        turns = len(player_names) * 5
 
-# add names to player_names
-player_names.extend(randomiseArray(cpu_names,cpu_player_count))
+        # set up 5 lives
+        global lives
+        lives = 5
 
-# mix up the players
-player_names = randomiseArray(player_names)
+        # initialise piface lights
+        for led in range(0,4):
+            pfd.leds[led].turn_on() 
+        # counter to keep track of answer
+        global i
+        i = 1
+        # turn counter
+        j = 1
 
-# how many turns to play? this is 5 times the number of players so everyone has 5 turns
-turns = len(player_names) * 5
-
-# set up 5 lives
-global lives
-lives = 5
-
-# initialise piface lights
-for led in range(0,4):
-    pfd.leds[led].turn_on() 
-# counter to keep track of answer
-i = 1
-# turn counter
-j = 1
-
-# let's go!
-while j<=5:
-    for player in player_names:
-        # check who's turn it is
-        if (player == player_name):
-            # it's human player turn so get an answer and check if it is correct
-            getAnswer()
-            # check if player is out of lives
+        # let's go!
+        while j<=5:
+            global player
+            for player in player_names:
+                # check who's turn it is
+                if (player == player_name):
+                    # it's human player turn so get an answer and check if it is correct
+                    getAnswer()
+                    # check if player is out of lives
+                    if lives == 0:
+                        break
+                else:
+                    # cpu player turn:
+                    print(player + " says\t" + checkFizzbuzz(i))
+                # increment the answer counter
+                i += 1
+            # check lives again
             if lives == 0:
                 break
+            # increment turn counter
+            j += 1
+        # check win conditions!
+        if lives == 0:
+            print("You lose!")
         else:
-            # cpu player turn:
-            print(player + " says\t" + checkFizzbuzz(i))
-        # increment the answer counter
-        i += 1
-    # check lives again
-    if lives == 0:
-        break
-    # increment turn counter
-    j += 1
-# check win conditions!
-if lives == 0:
-    print("You lose!")
-else:
-    print("You win!")
-    victoryLights()
-# switch out piface lights
-lightsOut()
+            print("You win!\n")
+            victoryLights()
+        # switch out piface lights
+        lightsOut()
+
+if __name__ == '__main__':
+      play()
